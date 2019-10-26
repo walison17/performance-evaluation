@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.db import models
-from django.core import validators
 from model_utils.models import TimeStampedModel
 
 
@@ -56,6 +55,13 @@ class Evaluation(TimeStampedModel):
 
 
 class EvaluationSkill(models.Model):
+    GRADE_CHOICES = (
+        (1, "Não atende as expectativas"),
+        (2, "Atende as expectativas"),
+        (3, "Algumas vezes excede as expectativas"),
+        (4, "Excede as Expectativas"),
+    )
+
     evaluation = models.ForeignKey(
         Evaluation,
         verbose_name='Avaliação',
@@ -68,13 +74,7 @@ class EvaluationSkill(models.Model):
         related_name='evaluation_skills',
         on_delete=models.CASCADE,
     )
-    grade = models.PositiveIntegerField(
-        'Nota',
-        validators=[
-            validators.MinValueValidator(0),
-            validators.MaxValueValidator(5)
-        ]
-    )
+    grade = models.PositiveIntegerField('Desempenho', choices=GRADE_CHOICES)
 
     class Meta:
         verbose_name = 'Habilidade'
@@ -83,4 +83,7 @@ class EvaluationSkill(models.Model):
         unique_together = ['evaluation', 'skill']
 
     def __str__(self):
-        return f'{self.evaluation} | Habildade: {self.skill}, Nota: {self.grade}'
+        return (
+            f'{self.evaluation} | Habildade: {self.skill}, '
+            f'Desempenho: {self.get_grade_display()}'
+        )
