@@ -19,3 +19,6 @@ jobs:
     - name: Test
       run: |
         python manage.py test
+      env:
+        SECRET_KEY: secret
+        ALLOWED_HOSTS: localhost,
